@@ -1,52 +1,72 @@
-# EdgeFlare AI Assistant (cf_ai_edgeflare-assistant)
+# 🚀 EdgeFlare AI Assistant
 
-**EdgeFlare AI Assistant** is a minimal demo of a stateful AI chat assistant built for Cloudflare’s optional assignment. It demonstrates:
+![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-orange?style=flat-square&logo=cloudflare)
+![Durable Objects](https://img.shields.io/badge/State-Durable%20Objects-blue?style=flat-square)
+![Workers AI](https://img.shields.io/badge/AI-Llama%203.1-violet?style=flat-square)
 
-- Cloudflare Workers for request routing and logic
-- Durable Objects for persistent, per-session memory
-- Workers AI (Llama 3.3) integration (preferred) or fallback to an external LLM
-- Pages-based chat UI
+**EdgeFlare AI Assistant** is a stateful, serverless chat application running entirely on Cloudflare's Edge. It demonstrates the power of combining **Workers** for compute, **Durable Objects** for low-latency storage, and **Workers AI** for inference.
 
-## Repo structure
+This project was built as part of the Cloudflare Software Engineering Internship assignment.
+
+🔗 **[Live Demo Available Here](https://cf_ai_edgeflare-assistant.thotasriramnaidu.workers.dev)**
+
+---
+
+## 🏗 System Architecture
+
+The application implements a full-stack architecture optimized for the Edge:
+
+1.  **Routing & Compute:** A Cloudflare Worker intercepts HTTP requests and serves the static frontend.
+2.  **State Management (Memory):** A **Durable Object** (`SessionDO`) creates a unique storage instance for every user session. This allows the AI to "remember" the conversation history without needing an external database like Redis or Postgres.
+3.  **Inference:** The Worker sends the chat history (retrieved from the DO) to **Workers AI**, running the `llama-3.1-8b-instruct` model.
+4.  **Frontend:** A lightweight, client-side HTML interface served directly from the Worker for maximum speed.
+
+---
+
+## 📂 Project Structure
+
+```text
 cf_ai_edgeflare-assistant/
-├─ src/
-│ ├─ worker/
-│ │ └─ index.js
-│ └─ do/
-│ └─ session.js
-├─ static/
-│ └─ index.html
-├─ PROMPTS.md
-├─ README.md
-└─ package.json
+├── src/
+│   ├── worker/
+│   │   └── index.js      # Main Worker logic (Router & AI Orchestrator)
+│   └── do/
+│       └── session.js    # Durable Object class (State & Storage)
+├── static/
+│   └── index.html        # Chat UI (served via Worker)
+├── PROMPTS.md            # AI System Prompts & Logic
+├── package.json          # Dependencies
+└── wrangler.toml         # Cloudflare Configuration
+
+⚡ How to Run Locally
+Clone the repository:
 
 
-## How to run (local / dev)
-1. Install Wrangler (Cloudflare CLI) — https://developers.cloudflare.com/workers/wrangler/
-2. Login: `wrangler login`
-3. Create `wrangler.toml` (example included below)
-4. Start Pages dev server (if using Pages UI for frontend): `wrangler pages dev ./static`
-5. Publish Worker: `wrangler publish`
 
-## Deployment notes & bindings
-In `wrangler.toml`, bind:
-- Durable Object namespace `DURABLE_NS` to the session DO class
-- (Optional) `WORKERS_AI` binding if your account has Workers AI
-- (Fallback) `OPENAI_API_KEY` to call external LLM
+git clone [https://github.com/sriram369/cf_ai_edgeflare-assistant.git](https://github.com/sriram369/cf_ai_edgeflare-assistant.git)
+cd cf_ai_edgeflare-assistant
+Install dependencies:
 
-### Example `wrangler.toml`
-```toml
-name = "cf_ai_edgeflare-assistant"
-main = "src/worker/index.js"
-compatibility_date = "2025-11-24"
+Bash
 
-[[durable_objects]]
-bindings = [
-  { name = "DURABLE_NS", class_name = "SessionDO" }
-]
+npm install
+Start the local development server:
 
-[bindings]
-# Add any KV or secret bindings if used
 
-[env.production]
-# production-specific bindings (if needed)
+
+npx wrangler dev
+Deploy to Cloudflare:
+
+
+
+npx wrangler deploy
+🛠 Configuration
+This project uses wrangler.toml for bindings:
+
+DURABLE_NS: Binds to the SessionDO class for persistent storage.
+
+AI: Binds to Cloudflare Workers AI platform.
+
+🧠 AI & Prompt Engineering
+See PROMPTS.md for detailed documentation on the system prompts used to guide the Llama model and how context windows are managed within the Durable Object.
+
