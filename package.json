@@ -1,0 +1,10 @@
+{
+  "name": "cf_ai_edgeflare-assistant",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler pages dev ./static --bindings",
+    "deploy": "wrangler publish"
+  },
+  "dependencies": {}
+}

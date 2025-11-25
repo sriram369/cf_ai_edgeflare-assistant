@@ -1,0 +1,22 @@
+name = "cf_ai_edgeflare-assistant"
+main = "src/worker/index.js"
+compatibility_date = "2024-11-25"
+
+# 1. AI Binding (Allows env.AI to work)
+[ai]
+binding = "AI"
+
+# 2. Durable Objects (Using the safe syntax)
+[[durable_objects.bindings]]
+name = "DURABLE_NS"
+class_name = "SessionDO"
+
+# 3. Migrations (CRITICAL for Free Plan: Use 'new_sqlite_classes')
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["SessionDO"]
+
+# 4. HTML Import Rule (Allows import html from ...)
+[[rules]]
+type = "Text"
+globs = ["**/*.html"]
